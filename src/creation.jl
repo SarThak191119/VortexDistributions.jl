@@ -90,6 +90,10 @@ function (s::ScalarVortex{T})(x,y) where T <: CoreShape
     @unpack xv,yv,qv = s.vort
     return s.core(x - xv, y - yv)*exp(im*qv*atan(y - yv,x - xv))
 end
+function (s::ScalarVortex{T})(x,y,z::Float64) where T <: CoreShape
+    @unpack xv,yv,qv = s.vort
+    return s.core(x - xv, y - yv)*exp(im*qv*(real(1im*log((exp(π*(x+1im*(y+z/2))/z)-exp(π*(xv-1im*(yv+z/2))/z))/(exp(π*(x+1im*(y+z/2))/z)-exp(π*(xv+1im*(yv+z/2))/z))))))
+end
 ScalarVortex(ξ::Float64,pv::Array{PointVortex,1}) = ScalarVortex.([Exact(ξ)],pv::Array{PointVortex,1})
 ScalarVortex(ξ::Array{Float64,1},pv::Array{PointVortex,1}) = @. ScalarVortex(Exact(ξ),pv::Array{PointVortex,1})
 ScalarVortex(ξ::Float64,pv::PointVortex) = ScalarVortex(ξ,[pv])
@@ -124,6 +128,12 @@ See also: [`Field`](@ref), [`ScalarVortex`](@ref), [`PointVortex`](@ref), [`rand
 function vortex!(psi::F,vort::ScalarVortex{T}) where {T <: CoreShape, F<:Field}
     @unpack ψ,x,y = psi
     ψ .*= vort.(x,y')
+    @pack! psi = ψ
+end
+
+function vortex!(psi::F,vort::ScalarVortex{T},Lz::Float64) where {T <: CoreShape, F<:Field}
+    @unpack ψ,x,y = psi
+    ψ .*= vort.(x,y',Lz)
     @pack! psi = ψ
 end
 function vortex!(psi::F,vort::S) where {F <: Field, S <: Vortex}
