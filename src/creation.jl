@@ -92,7 +92,7 @@ function (s::ScalarVortex{T})(x,y) where T <: CoreShape
 end
 function (s::ScalarVortex{T})(x,y,z::Float64) where T <: CoreShape
     @unpack xv,yv,qv = s.vort
-    return s.core(x - xv, y - yv)*exp(im*qv*(real(1im*log((exp(π*(x+1im*(y+z/2))/z)-exp(π*(xv-1im*(yv+z/2))/z))/(exp(π*(x+1im*(y+z/2))/z)-exp(π*(xv+1im*(yv+z/2))/z))))))
+    return s.core(x - xv, y - yv)*exp(im*qv*(real(1im*log((exp(π*(x+1im*(y+z/2))/z)-exp(π*(xv-1im*(yv+z/2))/z))/(exp(π*(x+1im*(y+z/2))/z)-exp(π*(xv+1im*(yv+z/2))/z)+1e-10)))))
 end
 ScalarVortex(ξ::Float64,pv::Array{PointVortex,1}) = ScalarVortex.([Exact(ξ)],pv::Array{PointVortex,1})
 ScalarVortex(ξ::Array{Float64,1},pv::Array{PointVortex,1}) = @. ScalarVortex(Exact(ξ),pv::Array{PointVortex,1})
